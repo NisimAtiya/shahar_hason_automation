@@ -8,6 +8,8 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from urllib.parse import unquote
 
+
+
 def get_shows(artist):
     options = Options()
     options.add_argument("--headless=new")  
@@ -21,31 +23,23 @@ def get_shows(artist):
         driver.get("https://comedybar.net/")
         wait = WebDriverWait(driver, 50)
 
-        try:
-            enter_button = wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "סטנדאפיסטים")))
-            driver.execute_script("arguments[0].scrollIntoView(true);", enter_button)
-            driver.execute_script("arguments[0].click();", enter_button)
 
-            
-        except TimeoutException:
-            print("⚠️ button סטנדאפיסטים Not Found")
-            return []
-
-        wait.until(EC.presence_of_all_elements_located((By.TAG_NAME, "img")))
-        images = driver.find_elements(By.TAG_NAME, "img")
+        wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "e-loop-item")))
+        artist_blocks = driver.find_elements(By.CLASS_NAME, "e-loop-item")
 
         found = False
-        for img in images:
-            src = img.get_attribute("src")
-            decoded_src = unquote(src) 
-            if artist.replace(" ", "-") in decoded_src.replace(" ", "-"):
-                parent_link = img.find_element(By.XPATH, "./ancestor::a[1]")
+        for block in artist_blocks:
+            h2 = block.find_element(By.TAG_NAME, "h2")
+
+            if artist in h2.text:
+                parent_link = block.find_element(By.XPATH, ".//ancestor::a[1]")
                 driver.execute_script("arguments[0].scrollIntoView(true);", parent_link)
-                driver.execute_script("arguments[0].click();",parent_link)
+                driver.execute_script("arguments[0].click();", parent_link)
 
 
-                wait.until(EC.presence_of_element_located((By.TAG_NAME, "h1")))
-                title = driver.find_element(By.TAG_NAME, "h1").text.strip()
+                wait.until(EC.presence_of_element_located((By.TAG_NAME, "h2")))
+                title = driver.find_element(By.TAG_NAME, "h2").text.strip()
+
 
                 if artist in title:
                     print(f"✅ We got {artist[::-1]} page")
