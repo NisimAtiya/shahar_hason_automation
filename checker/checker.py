@@ -48,6 +48,70 @@ def get_shows(artist):
                     print(f"❌ we got page {artist} but ({title}) Compatible")
                 found = True
                 break
+        
+        wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "elementor-icon-wrapper")))
+        show_elements  = driver.find_elements(By.CLASS_NAME, "elementor-icon-wrapper")
+        show_links = []
+        avilable_Showes = []
+        for show in show_elements:
+            try:
+
+                a_tag = show.find_element(By.TAG_NAME, "a")
+                href = a_tag.get_attribute("href")
+                if href:
+                    show_links.append(unquote(href))
+            except Exception as e:
+                print("⚠️ url is not right!", e)
+        
+        show_links = list(set(show_links))
+        print(f"🔎 found {len(show_links)} shows for {artist}")
+        sold_out = False
+        for show_url in show_links:
+            driver.get(show_url)
+            try:
+            
+                wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+                all_divs = driver.find_elements(By.TAG_NAME, "div")
+
+                for div in all_divs:
+                    text = div.text.strip()
+                    if text == "אזלו הכרטיסים באתר זה.":
+                        break
+            except Exception as e:
+                print("⚠️ error with show page", e)
+                
+
+            try:
+                show_container = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.text.show")))
+                
+                theater_elem = show_container.find_element(By.CLASS_NAME, "theater")
+                location = theater_elem.text.split("\n")[0].strip()
+
+                date_elem = show_container.find_element(By.CLASS_NAME, "event-date")
+                event_date = date_elem.text.strip()
+
+                time_elem = show_container.find_element(By.CLASS_NAME, "event-time")
+                event_time = time_elem.text.strip()
+
+                print(f"🎭 location: {location}")
+                print(f"📅 date: {event_date}")
+                print(f"⏰ time: {event_time}")
+            
+            except Exception as e:
+                print("⚠️ error with show page", e)
+
+
+                
+
+                        
+            except Exception as e:
+                print("⚠️ error with show page", e)
+
+
+
+                        
+
+
 
 
     except TimeoutException:
