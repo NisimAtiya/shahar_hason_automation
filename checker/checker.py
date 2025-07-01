@@ -130,15 +130,6 @@ def get_shows(artist):
             except Exception as e:
                 print("⚠️ error with show page", e)
 
-
-                
-
-                        
-            except Exception as e:
-                print("⚠️ error with show page", e)
-
-
-
     except TimeoutException:
         print("⏳ Timeout - Not loaded on time")
 
