@@ -50,6 +50,36 @@ def send_event_to_same_email(artist, events, to_email):
         print("❌ Error with sending mail: ", e)
 
 
+def no_events_found(artist, to_email):
+    """
+    שולחת מייל שמודיע שאין הופעות זמינות
+    """
+    smtp_user = os.getenv("SMTP_USER")
+    smtp_pass = os.getenv("SMTP_PASS")
+
+    msg = EmailMessage()
+    msg["From"] = smtp_user
+    msg["To"] = to_email
+    msg["Subject"] = f"ℹ️ אין הופעות זמינות עבור {artist}"
+
+    body = f"""שלום 👋,
+
+נכון לעכשיו, לא נמצאו הופעות זמינות עבור {artist} ❗
+
+מומלץ לבדוק שוב בהמשך או להישאר מעודכן באתר.
+
+בברכה 🌷,
+"""
+
+    msg.set_content(body)
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+            smtp.login(smtp_user, smtp_pass)
+            smtp.send_message(msg)
+            print("✅ Mail sent (no events found)")
+    except Exception as e:
+        print("❌ Error sending no-events mail:", e)
 
 
 

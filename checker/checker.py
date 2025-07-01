@@ -121,9 +121,9 @@ def get_shows(artist):
                 time_elem = show_container.find_element(By.CLASS_NAME, "event-time")
                 event_time = time_elem.text.strip()
 
-                print(f"🎭 location: {location}")
-                print(f"📅 date: {event_date}")
-                print(f"⏰ time: {event_time}")
+                print(f"🎭 location: {location[::-1]}")
+                print(f"📅 date: {event_date[::-1]}")
+                print(f"⏰ time: {event_time[::-1]}")
 
                 available_Shows.append((location,event_date,event_time))
             
@@ -143,4 +143,3 @@ def get_shows(artist):
         return available_Shows
 
 
-get_shows("שחר חסון")
